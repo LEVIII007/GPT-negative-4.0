@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
-    "channels",
+    # "channels",
 ]
 
 MIDDLEWARE = [
@@ -54,23 +55,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "gpt.urls"
 
-INSTALLED_APPS = [
-    # other apps
-    'channels',
-]
-
 ASGI_APPLICATION = 'your_project_name.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        'BACKEND': 'channels.layers.InMemoryChannelLayer', 
     },
 }
 
 TEMPLATES = [
     {
-        "BACKEND": {"django.template.backends.django.DjangoTemplates",'channels.layers.InMemoryChannelLayer',},
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -133,7 +129,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 # Default primary key field type

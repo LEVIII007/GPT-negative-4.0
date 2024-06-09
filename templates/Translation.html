@@ -21,5 +21,31 @@
         </div>
     </div>
     <script src="{% static 'Translation.js' %}"></script>
+    <script>
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/translate/');
+
+    socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var translation = data['translation'];
+
+        // Display the translation in your HTML
+        document.querySelector('#output').textContent = translation;
+    };
+
+    socket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#b').onclick = function(e) {
+        var sentenceInputDom = document.querySelector('#translation');
+        var sentence = sentenceInputDom.value;
+
+        socket.send(JSON.stringify({
+            'sentence': sentence
+        }));
+
+        sentenceInputDom.value = '';
+    };
+    </script>
 </body>
 </html>

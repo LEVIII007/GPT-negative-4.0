@@ -10,7 +10,7 @@ def generation(request):
 
 
 def translate(request):
-    return render(request, 'translate.html')
+    return render(request, 'Translation.html')
 
 
 def caption(request):
