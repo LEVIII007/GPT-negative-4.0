@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.container {
+    width: 80%;
+    max-width: 600px;
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-box {
+    display: flex; /* Use flexbox to align items horizontally */
+    align-items: center; /* Center items vertically */
+    margin-bottom: 20px;
+}
+
+.upload-label {
+    margin-right: 10px; /* Add some spacing between the icon and the input */
+}
+
+.upload-label img {
+    max-width: 30px; /* Adjust the maximum width of the upload icon */
+    height: auto; /* Maintain aspect ratio */
+    cursor: pointer; /* Add cursor pointer for click interaction */
+}
+
+button {
+    padding: 8px 12px; /* Adjust button padding for better appearance */
+}
+
+.output-container {
+    margin-top: 20px;
+    height: 400px; /* Increased height for the output container */
+    overflow-y: auto; /* Enable scrolling if content exceeds height */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+}
+
+.output-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+.image-block {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.image-block img {
+    max-width: 100px; /* Adjust image size as needed */
+    max-height: 100px;
+    margin-right: 10px;
+}

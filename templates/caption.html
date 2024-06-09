@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Details</title>
+    <link rel="stylesheet" href="caption.css">
+</head>
+<body>
+    <div class="container">
+        <div class="output-container" id="outputContainer">
+            <!-- Output items will be dynamically added here -->
+        </div>
+        <form onsubmit="handleSubmit(event)">
+            <div class="input-box">
+                <label for="imageUpload" class="upload-label">
+                    <img id="uploadIcon" src="Images/upload.png" alt="Upload">
+                </label>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" multiple>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <script src="caption.js"></script>
+</body>
+</html>
