@@ -12,6 +12,9 @@
         <div class="output-container" id="outputContainer">
             <!-- Output items will be dynamically added here -->
         </div>
+        <div class="output" id="output">
+            <!-- Additional output will be dynamically added here -->
+        </div>
         <form onsubmit="handleSubmit(event)">
             <div class="input-box">
                 <label for="imageUpload" class="upload-label">
@@ -22,7 +25,70 @@
             </div>
         </form>
     </div>
-    <script src="{% static 'caption.js' %}"></script>
+    <script>
+        function handleImageUpload(event) {
+    try {
+        const files = event.target.files;
+        const file = files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function() {
+            try {
+                const arrayBuffer = reader.result;
+                
+                // Create a WebSocket connection
+                const socket = new WebSocket(`ws://${window.location.host}/ws/socket-server/`);
+
+                // Send the image data over the WebSocket connection
+                console.log('Sending image data over WebSocket connection');
+                socket.onopen = function(event) {
+                    socket.send(arrayBuffer);
+                };
+
+                // Handle incoming messages from the WebSocket connection
+                socket.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        // Clear the output container
+                        outputContainer.innerHTML = '';
+
+                        // Create a new div for the output
+                        const outputDiv = document.createElement('div');
+                        outputDiv.textContent = JSON.stringify(data);
+
+                        // Add the output div to the output container
+                        outputContainer.appendChild(outputDiv);
+                    } catch (error) {
+                        console.error('Error handling WebSocket message:', error);
+                    }
+                };
+
+                socket.onerror = function(error) {
+                    // Handle the error here
+                    console.error('WebSocket error:', error);
+                };
+            } catch (error) {
+                console.error('Error in reader.onload:', error);
+            }
+        };
+        
+        reader.readAsArrayBuffer(file);
+    } catch (error) {
+        console.error('Error in handleImageUpload:', error);
+    }
+}
+
+function handleSubmit(event) {
+    try {
+        event.preventDefault();
+        
+        const images = document.querySelectorAll('.uploaded-image');
+    } catch (error) {
+        console.error('Error in handleSubmit:', error);
+    }
+}
+    </script>
 
 </body>
 </html>

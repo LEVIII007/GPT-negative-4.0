@@ -27,6 +27,10 @@ class TranslationConsumer(AsyncWebsocketConsumer):
         }))
 
 
+import base64
+from PIL import Image
+import io
+
 class captionConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connected")
@@ -37,17 +41,19 @@ class captionConsumer(AsyncWebsocketConsumer):
         pass
 
     # receive message from WebSocket
-    async def receive(self, text_data):
-        print("Received")
-        text_data_json = json.loads(text_data)
-        image_data = text_data_json['image']  # assuming the image data is base64 encoded
-
-        # decode and process the image
-        image_decoded = base64.b64decode(image_data)
-        result = inference.process_image(image_decoded)  # process the image
-        print(result)
-        # send message to WebSocket
-        await self.send(text_data=json.dumps({
-            'result': result
-        }))
-
+    async def receive(self, text_data = None, bytes_data= None):
+        print("Received :", bytes_data)
+        if bytes_data is not None:
+            image = Image.open(io.BytesIO(bytes_data))
+            print(image)
+            result = inference.process_image(image)  # process the image
+            print(result)
+            # send message to WebSocket
+            await self.send(text_data=json.dumps({
+                'result': result
+            }))
+        else:
+            print("No data received")
+            await self.send(text_data=json.dumps({
+                'result': "No data received"
+            }))
