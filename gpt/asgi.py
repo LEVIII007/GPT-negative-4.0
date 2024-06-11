@@ -11,7 +11,10 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-import gpt.core.routing
+from django.urls import path
+from core import routing
+from core import consumers
+# /home/shashank/Documents/GPT/gpt/core/routing.py
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpt.settings')
 
@@ -19,10 +22,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gpt.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            # your routing.py file path
-            gpt.core.routing.websocket_urlpatterns
-        )
-    ),
+    "websocket": URLRouter([
+            path("ws/socket-server/", consumers.captionConsumer.as_asgi()),
+        ]),
 })

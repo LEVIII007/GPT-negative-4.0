@@ -1,170 +1,101 @@
-from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import build_vocab_from_iterator
-from typing import Iterable, List
-from torch.nn.utils.rnn import pad_sequence
-# from torch.utils.data import DataLoader, Dataset
-from timeit import default_timer as timer
-from torch.nn import Transformer
-from torch import Tensor
-# from sklearn.model_selection import train_test_split
-# from tqdm.auto import tqdm
-
-import torch.nn as nn
-import torch
-import torch.nn.functional as F
-import numpy as np
-import math
+import keras
+# from keras.applications.vgg16 import VGG16, preprocess_input
+# from keras.preprocessing.image import load_img, img_to_array
 import os
+import pickle
+import numpy as np
+# from tensorflow.keras.preprocessing.sequence import pad_sequences
+# vgg_model = VGG16()
+# vgg_model = keras.models.Model(inputs=vgg_model.inputs, outputs=vgg_model.layers[-2].output)
+
+# with open('tokenizer.pkl', 'rb') as file:
+#     tokenizer = pickle.load(file)
+
+# from keras.models import load_model
+import base64
+from PIL import Image
+import io
 
 
+# model = load_model('img_caption_model.h5')
 
 
-def generate_square_subsequent_mask(sz):
-    mask = (torch.triu(torch.ones((sz, sz), device=DEVICE)) == 1).transpose(0, 1)
-    mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-    return mask
+from PIL import Image
+# import matplotlib.pyplot as plt
+# generate caption for an image
 
-def create_mask(src, tgt):
-    src_seq_len = src.shape[1]
-    tgt_seq_len = tgt.shape[1]
+# def idx_to_word(integer, tokenizer):
 
-    tgt_mask = generate_square_subsequent_mask(tgt_seq_len)
-    src_mask = torch.zeros((src_seq_len, src_seq_len),device=DEVICE).type(torch.bool)
+#     # Iterate through the tokenizer's vocabulary
+#     for word, index in tokenizer.word_index.items():
+#         # If the integer ID matches the index of a word, return the word
+#         if index == integer:
+#             return word
 
-    src_padding_mask = (src == PAD_IDX)
-    tgt_padding_mask = (tgt == PAD_IDX)
-    return src_mask, tgt_mask, src_padding_mask, tgt_padding_mask
+#     # If no matching word is found, return None
+#     return None
 
-class PositionalEncoding(nn.Module):
-    def __init__(self, d_model, dropout, max_len=5000):
-        """
-        :param max_len: Input length sequence.
-        :param d_model: Embedding dimension.
-        :param dropout: Dropout value (default=0.1)
-        """
-        super(PositionalEncoding, self).__init__()
-        self.dropout = nn.Dropout(p=dropout)
+# def predict_caption(model, image, tokenizer, max_length):
+#     # add start tag for generation process
+#     in_text = 'startseq'
+#     # iterate over the max length of sequence
+#     for i in range(max_length):
+        
+#        # Tokenize the current caption into a sequence of integers
+#         sequence = tokenizer.texts_to_sequences([in_text])[0]
+        
+#         # pad the sequence
+#         sequence = pad_sequences([sequence], max_length)
+       
+#         # predict next word
+#         yhat = model.predict([image, sequence], verbose=0)
+       
+#         # Get the index of the word with the highest probability
+#         yhat = np.argmax(yhat)
+        
+#         # convert index to word
+#         word = idx_to_word(yhat, tokenizer)
+        
+#         # stop if word not found
+#         if word is None:
+#             break
+#         # append word as input for generating next word
+#         in_text += " " + word
+#         # stop if we reach end tag
+#         if word == 'endseq':
+#             break
+      
+#     return in_text
 
-        pe = torch.zeros(max_len, d_model)
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
-        pe = pe.unsqueeze(0)
-        self.register_buffer('pe', pe)
+# def new_caption(image_path, model, tokenizer, max_length):
 
-    def forward(self, x):
-        """
-        Inputs of forward function
-        :param x: the sequence fed to the positional encoder model (required).
-        Shape:
-            x: [sequence length, batch size, embed dim]
-            output: [sequence length, batch size, embed dim]
-        """
+#     # Load VGG16 model and restructure it to output features from the second-to-last layer
 
-        x = x + self.pe[:, :x.size(1)]
-        return self.dropout(x)
+#     # Display the image
+#     img = load_img(image_path)
+#     plt.imshow(img)
 
-class TokenEmbedding(nn.Module):
-    def __init__(self, vocab_size: int, emb_size):
-        super(TokenEmbedding, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, emb_size)
-        self.emb_size = emb_size
+#     # Load and preprocess the image
+#     image = load_img(image_path, target_size=(224, 224))
+#     image = img_to_array(image)
+#     image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
+#     image = preprocess_input(image)
 
-    def forward(self, tokens: Tensor):
-        return self.embedding(tokens.long()) * math.sqrt(self.emb_size)
+#     # Extract features from the image using VGG16
+#     feature = vgg_model.predict(image, verbose=0)
 
-class Seq2SeqTransformer(nn.Module):
-    def __init__(
-        self,
-        num_encoder_layers: int,
-        num_decoder_layers: int,
-        emb_size: int,
-        nhead: int,
-        src_vocab_size: int,
-        tgt_vocab_size: int,
-        dim_feedforward: int = 512,
-        dropout: float = 0.1
-    ):
-        super(Seq2SeqTransformer, self).__init__()
-        self.transformer = Transformer(
-            d_model=emb_size,
-            nhead=nhead,
-            num_encoder_layers=num_encoder_layers,
-            num_decoder_layers=num_decoder_layers,
-            dim_feedforward=dim_feedforward,
-            dropout=dropout,
-            batch_first=True
-        )
-        self.generator = nn.Linear(emb_size, tgt_vocab_size)
-        self.src_tok_emb = TokenEmbedding(src_vocab_size, emb_size)
-        self.tgt_tok_emb = TokenEmbedding(tgt_vocab_size, emb_size)
-        self.positional_encoding = PositionalEncoding(
-            emb_size, dropout=dropout)
+#     # Generate caption using the trained model
+#     caption = predict_caption(model, feature, tokenizer, max_length)
 
-    def forward(self,
-                src: Tensor,
-                trg: Tensor,
-                src_mask: Tensor,
-                tgt_mask: Tensor,
-                src_padding_mask: Tensor,
-                tgt_padding_mask: Tensor,
-                memory_key_padding_mask: Tensor):
-        src_emb = self.positional_encoding(self.src_tok_emb(src))
-        tgt_emb = self.positional_encoding(self.tgt_tok_emb(trg))
-        outs = self.transformer(src_emb, tgt_emb, src_mask, tgt_mask, None,
-                                src_padding_mask, tgt_padding_mask, memory_key_padding_mask)
-        return self.generator(outs)
-
-    def encode(self, src: Tensor, src_mask: Tensor):
-        return self.transformer.encoder(self.positional_encoding(
-                            self.src_tok_emb(src)), src_mask)
-
-    def decode(self, tgt: Tensor, memory: Tensor, tgt_mask: Tensor):
-        return self.transformer.decoder(self.positional_encoding(
-                          self.tgt_tok_emb(tgt)), memory,
-                          tgt_mask)
+#     return caption
 
 
+def process_image(image_data):
+    # image_data = base64.b64decode(image_data_base64)
+    image = Image.open(io.BytesIO(image_data))
+    # new_caption(image)
+    # At this point, `image` is a PIL Image object. You can process the image as needed.
+    # Since you asked to return "hello", we're not doing anything with the image.
+    return "hello"
 
-# Load the .pth model
-model_path = 'model.pth'
-model = torch.load(model_path)
 
-# Set the model to evaluation mode
-model.eval()
-DEVICE = "cpu"
-
-# Helper function to generate output sequence using greedy algorithm.
-def greedy_decode(model, src, src_mask, max_len, start_symbol):
-    src = src.to(DEVICE)
-    src_mask = src_mask.to(DEVICE)
-
-    memory = model.encode(src, src_mask)
-    ys = torch.ones(1, 1).fill_(start_symbol).type(torch.long).to(DEVICE)
-    for i in range(max_len-1):
-        memory = memory.to(DEVICE)
-        if i == 0:
-            ys = ys.transpose(1, 0)
-        tgt_mask = (generate_square_subsequent_mask(ys.size(1))
-                    .type(torch.bool)).to(DEVICE)
-        out = model.decode(ys, memory, tgt_mask)
-        out = out
-        prob = model.generator(out[:, -1])
-        _, next_word = torch.max(prob, dim=1)
-        next_word = next_word.item()
-        ys = torch.cat([ys,
-                        torch.ones(1, 1).type_as(src.data).fill_(next_word)], dim=1)
-        if next_word == EOS_IDX:
-            break
-    return ys
-
-# Translation function. 
-def translate(model: torch.nn.Module, src_sentence: str):
-    model.eval()
-    src = text_transform[SRC_LANGUAGE](src_sentence).view(1, -1)
-    num_tokens = src.shape[1]
-    src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
-    tgt_tokens = greedy_decode(
-        model,  src, src_mask, max_len=num_tokens + 5, start_symbol=BOS_IDX).flatten()
-    return " ".join(vocab_transform[TGT_LANGUAGE].lookup_tokens(list(tgt_tokens.cpu().numpy()))).replace("<bos>", "").replace("<eos>", "")

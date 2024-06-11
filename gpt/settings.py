@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
-    # "channels",
 ]
 
 MIDDLEWARE = [
@@ -55,11 +54,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "gpt.urls"
 
-ASGI_APPLICATION = 'your_project_name.asgi.application'
-
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer', 
+        'BACKEND': 'channels_inmemory.InMemoryChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
     },
 }
 

@@ -15,7 +15,7 @@
         <form onsubmit="handleSubmit(event)">
             <div class="input-box">
                 <label for="imageUpload" class="upload-label">
-                    <img id="uploadIcon" src="{% static 'Images/upload.png' %}" alt="Upload">
+                    <img id="uploadIcon" src="{% static 'upload.png' %}" alt="Upload">
                 </label>
                 <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" multiple>
                 <button type="submit">Submit</button>
@@ -23,5 +23,6 @@
         </form>
     </div>
     <script src="{% static 'caption.js' %}"></script>
+
 </body>
 </html>
