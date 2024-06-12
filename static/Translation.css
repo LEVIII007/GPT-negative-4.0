@@ -1,0 +1,125 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #090001;
+    color: #ffffff; /* Added default text color */
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #e5f106; /* Added color for better visibility */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 10px auto; /* Adjusted margin */
+    width: 90%; /* Adjusted width */
+    height: 80vh;
+    background-color: #1f1f1f; /* Added background color */
+    border-radius: 10px; /* Added border radius */
+    padding: 20px; /* Added padding */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Improved shadow */
+}
+
+.output-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 60%;
+    overflow-y: auto;
+    border: 1px solid #e5f106;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Adjusted margin */
+    background-color: #362d2d;
+    border-radius: 5px;
+}
+
+#output {
+    width: 100%;
+    text-align: center;
+    font-size: 14px; /* Adjusted font size */
+    color: white;
+}
+
+.input-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%; /* Adjusted width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white; /* Added background color */
+}
+
+.input-box input {
+    padding: 10px; /* Adjusted padding */
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    width: 100%; /* Adjusted width */
+    font-size: 16px;
+}
+
+.input-box button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.input-box button img {
+    height: 40px;
+    width: 40px;
+}
+
+.output-item {
+    height: auto; /* Adjusted height */
+    width: auto; /* Adjusted width */
+    color: #e8dbdb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #090001; /* Added border for better visibility */
+    border-radius: 5px;
+    margin: 5px; /* Added margin for spacing */
+    padding: 10px; /* Added padding */
+    background-color: rgb(0, 0, 0); /* Added background color for better contrast */
+    word-break: break-word; /* Ensures long words break */
+}
+
+.ans-item {
+    height: auto; /* Adjusted height */
+    width: auto; /* Adjusted width */
+    color: #0c0000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #f4f0f0; /* Added border for better visibility */
+    border-radius: 5px;
+    margin: 5px; /* Added margin for spacing */
+    padding: 10px; /* Added padding */
+    background-color: white; /* Added background color for better contrast */
+    word-break: break-word; /* Ensures long words break */
+}
+
+/* Header Hover Effect */
+h1:hover {
+    color: #f1c40f; /* Changed color on hover */
+    transition: color 0.3s ease-in-out;
+}
