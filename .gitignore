@@ -1,0 +1,36 @@
+# created by virtualenv automatically
+# created by virtualenv automatically
+*.keras
+*.pt
+*.pkl
+# Ignore large keras files
+core/INF/*.keras
+core/INF/*.pt
+core/INF/*.pkl
+
+# Python related
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# virtual environment related
+venv/
+*.venv
+.env
+
+# Django related
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media
+
+# Development tools related
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Specific large files or file types
+*.largefiletype
